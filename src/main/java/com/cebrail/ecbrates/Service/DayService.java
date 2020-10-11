@@ -14,4 +14,8 @@ public interface DayService {
     Optional<Day> findById(LocalDate date);
 
     List<Day> findByDateBetween(LocalDate from, LocalDate to);
+
+    Boolean existsById(LocalDate date);
+
+    Day save(Day day);
 }

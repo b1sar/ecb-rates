@@ -24,11 +24,22 @@ public class DayServiceImpl implements DayService {
 
     @Override
     public List<Day> findByDateBetween(LocalDate from, LocalDate to) {
+
         return dayRepository.findByTimeBetween(from, to);
     }
 
     @Override
     public List<Day> findAll() {
         return dayRepository.findAll();
+    }
+
+    @Override
+    public Boolean existsById(LocalDate date) {
+        return dayRepository.existsById(date);
+    }
+
+    @Override
+    public Day save(Day day) {
+        return dayRepository.save(day);
     }
 }
