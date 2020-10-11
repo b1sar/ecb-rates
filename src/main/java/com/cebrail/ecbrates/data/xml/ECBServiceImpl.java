@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ConditionalOnProperty(
+        value = "xpath.enabled",
+        havingValue = "false")
 public class ECBServiceImpl implements EcbXmlService {
     public static String DAILY_RATES_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
     public static String LAST_90_DAY_RATES_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml";
@@ -32,6 +36,7 @@ public class ECBServiceImpl implements EcbXmlService {
         this.restTemplate = restTemplate;
         this.currencyRepository = currencyRepository;
         this.dayRepository = dayRepository;
+        System.err.println("JSON service initialized");
     }
 
     @Override
