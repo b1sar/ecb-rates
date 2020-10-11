@@ -9,6 +9,8 @@ import java.util.Optional;
 
 @Service
 public interface DayService {
+    List<Day> findAll();
+
     Optional<Day> findById(LocalDate date);
 
     List<Day> findByDateBetween(LocalDate from, LocalDate to);

@@ -26,4 +26,9 @@ public class DayServiceImpl implements DayService {
     public List<Day> findByDateBetween(LocalDate from, LocalDate to) {
         return dayRepository.findByTimeBetween(from, to);
     }
+
+    @Override
+    public List<Day> findAll() {
+        return dayRepository.findAll();
+    }
 }
