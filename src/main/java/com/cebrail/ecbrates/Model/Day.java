@@ -1,8 +1,9 @@
 package com.cebrail.ecbrates.Model;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -10,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 public class Day {
-    @ElementCollection
+    @OneToMany(cascade = CascadeType.ALL)
     List<Currency> currencies;
     @Id
     private LocalDate date;
