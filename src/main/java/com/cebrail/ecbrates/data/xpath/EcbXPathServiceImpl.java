@@ -5,6 +5,7 @@ import com.cebrail.ecbrates.Model.Day;
 import com.cebrail.ecbrates.Service.DayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.springframework.web.client.RestTemplate;
@@ -24,11 +25,14 @@ import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 @ConditionalOnProperty(
@@ -39,6 +43,7 @@ public class EcbXPathServiceImpl implements EcbXPathService {
     public static String DAILY_RATES_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
     public static String LAST_90_DAY_RATES_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml";
     public static String HISTORICAL_RATES_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml";
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private RestTemplate restTemplate;
     private DayService dayService;
@@ -50,8 +55,10 @@ public class EcbXPathServiceImpl implements EcbXPathService {
         System.err.println("XPath service initialized");
     }
 
+    @Scheduled(initialDelay = 864_00_000L, fixedRate = 864_00_000L)
     @Override
     public void dailyUpdate() {
+        logger.log(Level.INFO, "Started the daily update at: " + LocalDateTime.now().toString());
         try {
             parseAndUpdate(DAILY_RATES_URL);
         } catch (XPathExpressionException e) {
@@ -60,8 +67,10 @@ public class EcbXPathServiceImpl implements EcbXPathService {
         }
     }
 
+    @Scheduled(initialDelay = 600_800_000L, fixedRate = 600_800_000L)
     @Override
     public void weeklyUpdate() {
+        logger.log(Level.INFO, "Started the weekly update at: " + LocalDateTime.now().toString());
         try {
             parseAndUpdate(LAST_90_DAY_RATES_URL);
         } catch (XPathExpressionException e) {
@@ -70,8 +79,10 @@ public class EcbXPathServiceImpl implements EcbXPathService {
         }
     }
 
+    @Scheduled(initialDelay = 10000, fixedRate = 259_200_0000L)
     @Override
     public void monthlyUpdate() {
+        logger.log(Level.INFO, "Started the monthly update at: " + LocalDateTime.now().toString());
         try {
             parseAndUpdate(HISTORICAL_RATES_URL);
         } catch (XPathExpressionException e) {
@@ -98,7 +109,7 @@ public class EcbXPathServiceImpl implements EcbXPathService {
             String time = node.getAttributes().getNamedItem("time").getNodeValue();
             System.out.println("time : " + time);
 
-            LocalDate date = LocalDate.parse(time, DateTimeFormatter.BASIC_ISO_DATE);
+            LocalDate date = LocalDate.parse(time, DateTimeFormatter.ISO_DATE);
             if (!dayService.existsById(date)) {
                 List<Currency> currencies = new ArrayList<>();
                 Day newDay = new Day(date, currencies);
