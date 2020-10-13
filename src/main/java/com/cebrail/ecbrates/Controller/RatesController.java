@@ -40,11 +40,18 @@ public class RatesController {
         }
 
         if (day.isPresent()) {
-            exchangeRatesUtils.rebase(day.get(), base);
-            exchangeRatesUtils.pickAllSelected(day.get(), symbols);
+            if (base.isPresent()) {
+                exchangeRatesUtils.rebase(day.get(), base.get());
+            }
+            if (symbols.isPresent()) {
+                exchangeRatesUtils.pickAllSelected(day.get(), symbols.get());
+            }
             return day.get();
+        } else {
+            //execute updateDaily function of a scheduler, then try to get the latest day if there is no date
+            //then decide what to return
+            return new Day();
         }
-        return new Day();
     }
 
     @GetMapping("/historical")
@@ -65,8 +72,12 @@ public class RatesController {
         }
 
         for (Day d : days) {
-            exchangeRatesUtils.rebase(d, base);
-            exchangeRatesUtils.pickAllSelected(d, symbols);
+            if (base.isPresent()) {
+                exchangeRatesUtils.rebase(d, base.get());
+            }
+            if (symbols.isPresent()) {
+                exchangeRatesUtils.pickAllSelected(d, symbols.get());
+            }
         }
         return days;
     }

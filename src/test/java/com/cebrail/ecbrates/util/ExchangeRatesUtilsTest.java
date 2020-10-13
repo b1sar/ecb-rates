@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +36,7 @@ class ExchangeRatesUtilsTest {
 
         Day day = new Day(LocalDate.now(), currencyList);
 
-        exchangeRatesUtils.rebase(day, Optional.of("USD"));
+        exchangeRatesUtils.rebase(day, "USD");
 
         assertEquals(3d, try_.getRate());
         assertEquals(1.0d, usd.getRate());
@@ -60,7 +59,7 @@ class ExchangeRatesUtilsTest {
 
         Day day = new Day(LocalDate.now(), currencyList);
 
-        exchangeRatesUtils.rebase(day, Optional.of("EUR"));
+        exchangeRatesUtils.rebase(day, "EUR");
 
         assertEquals(10d, usd.getRate());
         assertEquals(30d, try_.getRate());
@@ -82,7 +81,7 @@ class ExchangeRatesUtilsTest {
 
         Day day = new Day(LocalDate.now(), currencyList);
 
-        exchangeRatesUtils.rebase(day, Optional.of("TEST-NA"));
+        exchangeRatesUtils.rebase(day, "TEST-NA");
 
         assertEquals(10d, usd.getRate());
         assertEquals(30d, try_.getRate());
@@ -106,7 +105,7 @@ class ExchangeRatesUtilsTest {
 
         List<String> symbols = List.of("TRY", "PLn");
 
-        exchangeRatesUtils.pickAllSelected(day, Optional.of(symbols));
+        exchangeRatesUtils.pickAllSelected(day, symbols);
 
         assertEquals(symbols.size(), day.getCurrencies().size());
     }
@@ -128,6 +127,6 @@ class ExchangeRatesUtilsTest {
 
         List<String> symbols = List.of("TRY", "TEST-NA");
 
-        assertThrows(UnsupportedCurrencyException.class, () -> exchangeRatesUtils.pickAllSelected(day, Optional.of(symbols)));
+        assertThrows(UnsupportedCurrencyException.class, () -> exchangeRatesUtils.pickAllSelected(day, symbols));
     }
 }

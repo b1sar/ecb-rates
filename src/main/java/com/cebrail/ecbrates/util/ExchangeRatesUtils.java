@@ -23,14 +23,14 @@ public class ExchangeRatesUtils {
     }
 
     //utils
-    public void rebase(Day day, Optional<String> offeredBase) throws CannotRebaseCurrenciesException {
+    public void rebase(Day day, String offeredBase) throws CannotRebaseCurrenciesException {
 
         List<Currency> currencies = day.getCurrencies();
-        if (offeredBase.isPresent() && !offeredBase.get().equals("EUR")) {
+        if (!offeredBase.equals("EUR")) {
 
-            if (isBaseSupported(offeredBase.get())) {
+            if (isBaseSupported(offeredBase)) {
                 Optional<Currency> base = currencies.stream()
-                        .filter(currency -> offeredBase.get().toLowerCase().equals(currency.getName().toLowerCase()))
+                        .filter(currency -> offeredBase.toLowerCase().equals(currency.getName().toLowerCase()))
                         .findFirst();
                 /*
                 //TODO: base.get() is used withoed base.isPresent() check. Refactor.
@@ -55,25 +55,23 @@ public class ExchangeRatesUtils {
 
                     day.setCurrencies(currencies);
                 } else {
-                    throw new CannotRebaseCurrenciesException("There is no base currency entry in this day", day, offeredBase.get());
+                    throw new CannotRebaseCurrenciesException("There is no base currency entry in this day", day, offeredBase);
                 }
             }
         }
     }
 
-    public void pickAllSelected(Day day, Optional<List<String>> symbols) throws UnsupportedCurrencyException {//filter symbols
-        if (symbols.isPresent()) {
-            if (areAllSymbolsValid(symbols.get())) {
-                List<String> symbolList = symbols.get().stream().map(String::toLowerCase).collect(Collectors.toList());
+    public void pickAllSelected(Day day, List<String> symbols) throws UnsupportedCurrencyException {//filter symbols
+        if (areAllSymbolsValid(symbols)) {
+            List<String> symbolList = symbols.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-                List<Currency> newCurrencies = day.getCurrencies().stream()
-                        .filter(currency -> symbolList.contains(currency.getName().toLowerCase()))
-                        .collect(Collectors.toList());
-                day.setCurrencies(newCurrencies);
-            } else {
-                //throw an unsupportedCurrency exception
-                throw new UnsupportedCurrencyException("The currency symbols provided are unvalid or not supported");
-            }
+            List<Currency> newCurrencies = day.getCurrencies().stream()
+                    .filter(currency -> symbolList.contains(currency.getName().toLowerCase()))
+                    .collect(Collectors.toList());
+            day.setCurrencies(newCurrencies);
+        } else {
+            //throw an unsupportedCurrency exception
+            throw new UnsupportedCurrencyException("The currency symbols provided are unvalid or not supported");
         }
     }
 
