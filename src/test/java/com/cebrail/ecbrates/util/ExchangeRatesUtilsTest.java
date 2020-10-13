@@ -2,6 +2,7 @@ package com.cebrail.ecbrates.util;
 
 import com.cebrail.ecbrates.Model.Currency;
 import com.cebrail.ecbrates.Model.Day;
+import com.cebrail.ecbrates.UnsupportedCurrencyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ExchangeRatesUtilsTest {
 
@@ -109,8 +111,9 @@ class ExchangeRatesUtilsTest {
         assertEquals(symbols.size(), day.getCurrencies().size());
     }
 
-    //should throw unsupported exception
-    void pick_NonExistentSymbol() {
+
+    @Test
+    void pick_NonExistentSymbol_ShouldThrowException() {
         List<Currency> currencyList = new ArrayList<>();
         var usd = new Currency("USD", 10d);
         var try_ = new Currency("TRY", 30d);
@@ -125,8 +128,6 @@ class ExchangeRatesUtilsTest {
 
         List<String> symbols = List.of("TRY", "TEST-NA");
 
-        exchangeRatesUtils.pickAllSelected(day, Optional.of(symbols));
-
-
+        assertThrows(UnsupportedCurrencyException.class, () -> exchangeRatesUtils.pickAllSelected(day, Optional.of(symbols)));
     }
 }
