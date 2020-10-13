@@ -36,7 +36,7 @@ public class RatesController {
         if (at.isPresent()) {
             day = dayService.findById(at.get());
         } else {
-            day = dayService.findById(LocalDate.of(2020, 10, 9));
+            day = dayService.findById(LocalDate.now());
         }
 
         if (day.isPresent()) {

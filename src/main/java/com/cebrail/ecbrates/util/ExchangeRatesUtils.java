@@ -1,7 +1,9 @@
 package com.cebrail.ecbrates.util;
 
+import com.cebrail.ecbrates.CannotRebaseCurrenciesException;
 import com.cebrail.ecbrates.Model.Currency;
 import com.cebrail.ecbrates.Model.Day;
+import com.cebrail.ecbrates.UnsupportedCurrencyException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +23,7 @@ public class ExchangeRatesUtils {
     }
 
     //utils
-    public void rebase(Day day, Optional<String> offeredBase) {
+    public void rebase(Day day, Optional<String> offeredBase) throws CannotRebaseCurrenciesException {
 
         List<Currency> currencies = day.getCurrencies();
         if (offeredBase.isPresent() && !offeredBase.get().equals("EUR")) {
@@ -44,17 +46,22 @@ public class ExchangeRatesUtils {
                 throw an exception( for example DayDoesntHaveData(LocalDateTime, base, "there is no data for the day..")
                 and catch that exception in the controller then handle thereafter
                  */
-                Double baseRate = base.get().getRate();
-                for (Currency d : currencies) {
+                if (base.isPresent()) {
+                    Double baseRate = base.get().getRate();
+                    for (Currency d : currencies) {
 
-                    d.setRate(d.getRate() / baseRate);
+                        d.setRate(d.getRate() / baseRate);
+                    }
+
+                    day.setCurrencies(currencies);
+                } else {
+                    throw new CannotRebaseCurrenciesException("There is no base currency entry in this day", day, offeredBase.get());
                 }
-                day.setCurrencies(currencies);
             }
         }
     }
 
-    public void pickAllSelected(Day day, Optional<List<String>> symbols) {//filter symbols
+    public void pickAllSelected(Day day, Optional<List<String>> symbols) throws UnsupportedCurrencyException {//filter symbols
         if (symbols.isPresent()) {
             if (areAllSymbolsValid(symbols.get())) {
                 List<String> symbolList = symbols.get().stream().map(String::toLowerCase).collect(Collectors.toList());
@@ -65,6 +72,7 @@ public class ExchangeRatesUtils {
                 day.setCurrencies(newCurrencies);
             } else {
                 //throw an unsupportedCurrency exception
+                throw new UnsupportedCurrencyException("The currency symbols provided are unvalid or not supported");
             }
         }
     }
