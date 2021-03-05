@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-@RestController()
+@RestController("/api/v1")
 public class RatesController {
     private Logger logger = Logger.getLogger(this.getClass().getName());
     private DayService dayService;
